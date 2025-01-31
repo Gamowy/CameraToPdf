@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">CameraToPdf</string>
+    <string name="capture_button_description">Capture</string>
+    <string name="switch_camera_button_description">Switch camera</string>
+    <string name="camera_permission_denied">Camera access denied</string>
+</resources>

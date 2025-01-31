@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/black">
+    <item>
+    <layer-list>
+        <item>
+            <shape>
+                <solid android:color="@color/switch_camera_button_color" />
+                <corners android:radius="55dp" />
+                <size
+                    android:width="110dp"
+                    android:height="110dp" />
+            </shape>
+        </item>
+        <item
+            android:drawable="@drawable/ic_switch_camera"
+            android:gravity="center"
+            android:width="40dp"
+            android:height="40dp"
+            />
+    </layer-list>
+</item>
+</ripple>
