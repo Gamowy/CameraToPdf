@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.cameratopdf.databinding.ActivityMainBinding
 import android.Manifest
-import android.annotation.SuppressLint
 import android.util.Log
 import android.view.OrientationEventListener
 import android.view.ViewGroup.MarginLayoutParams
@@ -16,15 +15,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
 import androidx.camera.camera2.interop.ExperimentalCamera2Interop
 import androidx.camera.core.CameraSelector
-import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.LifecycleCameraController
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
-import androidx.core.view.marginTop
 import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
 
 class MainActivity : AppCompatActivity() {
 
@@ -49,10 +43,13 @@ class MainActivity : AppCompatActivity() {
                 bottomMargin = insets.bottom
             }
             binding.appName.updateLayoutParams<MarginLayoutParams> {
-                topMargin = insets.top
+                topMargin = insets.top + 20
             }
             binding.settingsButton.updateLayoutParams<MarginLayoutParams> {
-                topMargin = insets.top
+                topMargin = insets.top + 20
+            }
+            binding.infoButton.updateLayoutParams<MarginLayoutParams> {
+                topMargin = insets.top + 20
             }
             WindowInsetsCompat.CONSUMED
         }
@@ -92,6 +89,12 @@ class MainActivity : AppCompatActivity() {
             else
                 CameraSelector.DEFAULT_FRONT_CAMERA
             startCamera(selectedCamera)
+        }
+
+        // Open settings
+        binding.settingsButton.setOnClickListener {
+            val intent = android.content.Intent(this, DetailsActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -154,7 +157,9 @@ class MainActivity : AppCompatActivity() {
             Rotation.REVERSE_PORTRAIT -> 180
             Rotation.REVERSE_LANDSCAPE -> 270
         }
+        binding.pdfsButton.rotation = rotationDegree.toFloat()
         binding.switchCameraButton.rotation = rotationDegree.toFloat()
+        binding.infoButton.rotation = rotationDegree.toFloat()
         binding.settingsButton.rotation = rotationDegree.toFloat()
     }
 }
