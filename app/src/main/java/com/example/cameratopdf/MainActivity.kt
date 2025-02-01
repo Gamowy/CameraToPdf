@@ -2,28 +2,29 @@ package com.example.cameratopdf
 
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.ViewGroup
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.updateLayoutParams
 import com.example.cameratopdf.databinding.ActivityMainBinding
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.res.Configuration
-import android.os.Build
 import android.util.Log
-import android.util.TypedValue
 import android.view.OrientationEventListener
-import android.view.Surface
-import android.view.WindowManager
+import android.view.ViewGroup.MarginLayoutParams
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.OptIn
+import androidx.camera.camera2.interop.ExperimentalCamera2Interop
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.camera.view.LifecycleCameraController
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.marginTop
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,11 +37,25 @@ class MainActivity : AppCompatActivity() {
     private var selectedCamera = CameraSelector.DEFAULT_BACK_CAMERA
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Inflate view and adjust it
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updateLayoutParams<MarginLayoutParams> {
+                leftMargin = insets.left
+                rightMargin = insets.right
+                bottomMargin = insets.bottom
+            }
+            binding.appName.updateLayoutParams<MarginLayoutParams> {
+                topMargin = insets.top
+            }
+            binding.settingsButton.updateLayoutParams<MarginLayoutParams> {
+                topMargin = insets.top
+            }
+            WindowInsetsCompat.CONSUMED
+        }
 
         // Device rotation listener
         orientationEventListener = object : OrientationEventListener(this) {
@@ -81,36 +96,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Starts camera preview
+    @OptIn(ExperimentalCamera2Interop::class)
     private fun startCamera(selector: CameraSelector) {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-
-        cameraProviderFuture.addListener({
-            // Used to bind the lifecycle of cameras to the lifecycle owner
-            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-
-            // Preview
-            val preview = Preview.Builder()
-                .build()
-                .also {
-                    it.surfaceProvider = binding.viewFinder.surfaceProvider
-                }
-            // Select back camera as a default
-            val cameraSelector = selector
-
-            try {
-                // Unbind use cases before rebinding
-                cameraProvider.unbindAll()
-
-                // Bind use cases to camera
-                cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview
-                )
-
-            } catch (exc: Exception) {
-                Log.e(TAG, "Camera preview failed", exc)
-            }
-
-        }, ContextCompat.getMainExecutor(this))
+        val cameraController = LifecycleCameraController(this)
+        cameraController.bindToLifecycle(this)
+        cameraController.cameraSelector = selector
+        binding.viewFinder.controller = cameraController
+        cameraController.isTapToFocusEnabled = true
+        cameraController.isPinchToZoomEnabled = true
     }
 
     // Request camera permissions
