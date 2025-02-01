@@ -7,14 +7,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.cameratopdf.databinding.ActivityMainBinding
 import android.Manifest
+import android.content.Intent
 import android.util.Log
 import android.view.OrientationEventListener
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.camera.camera2.interop.ExperimentalCamera2Interop
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.TorchState
 import androidx.camera.view.LifecycleCameraController
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -29,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var orientationEventListener: OrientationEventListener
     private var selectedCamera = CameraSelector.DEFAULT_BACK_CAMERA
+    private var torchState : Int? = TorchState.OFF
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,7 +86,7 @@ class MainActivity : AppCompatActivity() {
             requestPermissions()
         }
 
-        // Switch camera on button press
+        // Switch camera
         binding.switchCameraButton.setOnClickListener {
             selectedCamera = if (selectedCamera == CameraSelector.DEFAULT_FRONT_CAMERA)
                 CameraSelector.DEFAULT_BACK_CAMERA
@@ -93,7 +97,7 @@ class MainActivity : AppCompatActivity() {
 
         // Open settings
         binding.settingsButton.setOnClickListener {
-            val intent = android.content.Intent(this, DetailsActivity::class.java)
+            val intent = Intent(this, DetailsActivity::class.java)
             startActivity(intent)
         }
     }
@@ -107,6 +111,24 @@ class MainActivity : AppCompatActivity() {
         binding.viewFinder.controller = cameraController
         cameraController.isTapToFocusEnabled = true
         cameraController.isPinchToZoomEnabled = true
+
+        // Flash toggle
+        cameraController.torchState.observe(this) {
+            torchState = it
+            torchState?.let { state ->
+                if (state == TorchState.OFF) {
+                    binding.flashButton.foreground = AppCompatResources.getDrawable(this,  R.drawable.flash_off_button)
+                } else {
+                    binding.flashButton.foreground = AppCompatResources.getDrawable(this,  R.drawable.flash_on_button)
+                }
+            }
+        }
+        binding.flashButton.setOnClickListener {
+            if (torchState == TorchState.OFF)
+                cameraController.enableTorch(true)
+            else
+                cameraController.enableTorch(false)
+        }
     }
 
     // Request camera permissions

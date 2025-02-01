@@ -3,6 +3,7 @@
     <string name="capture_button_description">Capture</string>
     <string name="switch_camera_button_description">Switch camera</string>
     <string name="settings_button_description">Settings</string>
+    <string name="flash_button_description">Flash toggle</string>
     <string name="info_button_description">Info</string>
     <string name="pdfs_button_description">PDFs</string>
     <string name="camera_permission_denied">Camera access denied</string>
