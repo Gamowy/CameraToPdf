@@ -7,9 +7,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.cameratopdf.databinding.ActivityMainBinding
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.util.Log
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.OrientationEventListener
+import android.view.ScaleGestureDetector
+import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,7 +22,10 @@ import androidx.annotation.OptIn
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.camera.camera2.interop.ExperimentalCamera2Interop
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.FocusMeteringAction
+import androidx.camera.core.MeteringPointFactory
 import androidx.camera.core.TorchState
+import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -103,14 +111,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Starts camera preview
+    @SuppressLint("ClickableViewAccessibility")
     @OptIn(ExperimentalCamera2Interop::class)
     private fun startCamera(selector: CameraSelector) {
         val cameraController = LifecycleCameraController(this)
         cameraController.bindToLifecycle(this)
         cameraController.cameraSelector = selector
         binding.viewFinder.controller = cameraController
-        cameraController.isTapToFocusEnabled = true
-        cameraController.isPinchToZoomEnabled = true
+        cameraController.isTapToFocusEnabled = false
+        cameraController.isPinchToZoomEnabled = false
 
         // Flash toggle
         cameraController.torchState.observe(this) {
@@ -128,6 +137,14 @@ class MainActivity : AppCompatActivity() {
                 cameraController.enableTorch(true)
             else
                 cameraController.enableTorch(false)
+        }
+
+        // Detect tap to focus and pinch to zoom gestures
+        val gestureDetector = GestureDetector(this, GestureListener(cameraController))
+        val scaleGestureDetector = ScaleGestureDetector(this, ScaleListener(cameraController))
+        binding.viewFinder.setOnTouchListener { _, event ->
+            gestureDetector.onTouchEvent(event)
+            scaleGestureDetector.onTouchEvent(event)
         }
     }
 
@@ -183,5 +200,35 @@ class MainActivity : AppCompatActivity() {
         binding.switchCameraButton.rotation = rotationDegree.toFloat()
         binding.infoButton.rotation = rotationDegree.toFloat()
         binding.settingsButton.rotation = rotationDegree.toFloat()
+    }
+
+    // Tap to focus listener
+    private inner class GestureListener(val cameraController: CameraController) : GestureDetector.SimpleOnGestureListener() {
+        override fun onSingleTapUp(event: MotionEvent): Boolean {
+            val factory: MeteringPointFactory = binding.viewFinder.meteringPointFactory
+            val point = factory.createPoint(event.x, event.y)
+            val action = FocusMeteringAction.Builder(point).build()
+            cameraController.cameraControl?.startFocusAndMetering(action)
+
+            // Show focus circle
+            binding.focusCircleView.setCirclePosition(event.x, event.y)
+            binding.focusCircleView.visibility = View.VISIBLE
+
+            // Hide focus circle after a delay
+            binding.focusCircleView.postDelayed({
+                binding.focusCircleView.visibility = View.GONE
+            }, 3000)
+            return true
+        }
+    }
+
+    // Pinch to zoom listener
+    private inner class ScaleListener(val cameraController: CameraController): ScaleGestureDetector.SimpleOnScaleGestureListener() {
+        override fun onScale(detector: ScaleGestureDetector): Boolean {
+            cameraController.cameraControl?.setZoomRatio(
+                cameraController.cameraInfo?.zoomState?.value?.zoomRatio?.times(detector.scaleFactor) ?: 1f
+            )
+            return true
+        }
     }
 }

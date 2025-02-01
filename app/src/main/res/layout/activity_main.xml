@@ -12,8 +12,13 @@
         android:id="@+id/viewFinder"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
-
     </androidx.camera.view.PreviewView>
+
+    <com.example.cameratopdf.ui.camera.FocusCircleView
+        android:id="@+id/focusCircleView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/info_button"
