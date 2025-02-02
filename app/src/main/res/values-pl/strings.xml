@@ -28,4 +28,13 @@
     <string name="language_hint">Język</string>
     <string name="clear_app_data">Wyczyść dane aplikacji</string>
     <string name="app_settings">Ustawienia aplikacji</string>
+    <string name="info_title">Jak używać aplikacji</string>
+    <string name="info_message">
+        Po naciśnięciu przycisku migawki, rozpocznie się wykonywanie zdjęć.
+        Po zrobieniu wszystkich zdjęć, zostanie wyświetlony podgląd.
+        Wciśnij przycisk zapisu, aby wysłać zdjęcia na serwer.
+        \n\nSerwer utworzy dokument PDF z wykonanymi zdjęciami.
+        Możesz dostosować ilość zdjęć i czas pomiędzy zdjęciami w ustawieniach.
+    </string>
+    <string name="ok">OK</string>
 </resources>

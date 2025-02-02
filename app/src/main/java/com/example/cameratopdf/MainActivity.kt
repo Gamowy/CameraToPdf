@@ -35,6 +35,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
 import com.example.cameratopdf.ui.settings.other.OtherSettingsViewModel
 import com.example.cameratopdf.ui.settings.other.OtherSettingsViewModel.Companion.otherSettings
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -115,6 +116,20 @@ class MainActivity : AppCompatActivity() {
         binding.settingsButton.setOnClickListener {
             val intent = Intent(this, ContentActivity::class.java)
             startActivity(intent)
+        }
+
+        // Open info
+        binding.infoButton.setOnClickListener {
+            lifecycleScope.launch {
+                MaterialAlertDialogBuilder(this@MainActivity)
+                    .setTitle(resources.getString(R.string.info_title))
+                    .setMessage(resources.getString(R.string.info_message))
+                    .setPositiveButton(resources.getString(R.string.ok)) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .setIcon(R.drawable.ic_info)
+                    .show()
+            }
         }
     }
 
