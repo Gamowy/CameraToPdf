@@ -14,6 +14,7 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
 import android.provider.MediaStore
 import android.util.Log
 import android.view.GestureDetector
@@ -40,6 +41,8 @@ import androidx.camera.view.LifecycleCameraController
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import com.example.cameratopdf.ui.settings.camera.CameraSettingsViewModel
 import com.example.cameratopdf.ui.settings.camera.CameraSettingsViewModel.Companion.cameraSettings
@@ -59,15 +62,22 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var orientationEventListener: OrientationEventListener
+    private lateinit var cameraController: LifecycleCameraController
     private var selectedCamera = CameraSelector.DEFAULT_BACK_CAMERA
     private var torchState : Int? = TorchState.OFF
-    private lateinit var cameraController: LifecycleCameraController
+
+    private var _isTakingPhoto = MutableLiveData(false)
+    private var isTakingPhotos: LiveData<Boolean> = _isTakingPhoto
 
     private var photosPerDocument = 5
     private var timeBetweenPhotos = 5
     private var makeSoundBeforePhoto = true
     private var makeSoundAfterPhoto = true
     private var makeSoundAfterAllPhotos = true
+
+    private lateinit var soundBefore: MediaPlayer
+    private lateinit var soundPictureTaken: MediaPlayer
+    private lateinit var soundAfter: MediaPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,6 +104,10 @@ class MainActivity : AppCompatActivity() {
         }
         lifecycleScope.launch { loadTheme(applicationContext) }
 
+        // Sound players
+        soundBefore = MediaPlayer.create(this, R.raw.before)
+        soundPictureTaken = MediaPlayer.create(this, R.raw.picture_taken)
+        soundAfter = MediaPlayer.create(this, R.raw.after)
 
         // Device rotation listener
         orientationEventListener = object : OrientationEventListener(this) {
@@ -167,6 +181,14 @@ class MainActivity : AppCompatActivity() {
             else {
                 requestPermissions()
             }
+        }
+
+        // Disable buttons while taking photos in progress
+        isTakingPhotos.observe(this) {
+            binding.imageCaptureButton.isEnabled = !it
+            binding.switchCameraButton.isEnabled = !it
+            binding.settingsButton.isEnabled = !it
+            binding.infoButton.isEnabled = !it
         }
     }
 
@@ -270,21 +292,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // NOTES:
-    // Get capture settings from settings
-    // Start taking photos
-    // Save photos to a temp location
-    // Update ui and play sound as photos are taken
-    // After all photos are taken launch content activity with a fragment to preview the photos
     private suspend fun startTakingPhotos() {
+        _isTakingPhoto.value = true
         loadCameraSettings(applicationContext)
         updatePicturesTakenInfo(0)
+
+        if (makeSoundBeforePhoto) {
+            soundBefore.start()
+        }
+
         binding.picturesTakenInfo.visibility = View.VISIBLE
         for (i in 1..photosPerDocument) {
             takePhoto()
             updatePicturesTakenInfo(i)
         }
+
         binding.picturesTakenInfo.visibility = View.GONE
+        delay(1000)
+        if(makeSoundAfterAllPhotos) {
+            soundAfter.start()
+        }
+        _isTakingPhoto.value = false
     }
 
     private suspend fun takePhoto() {
@@ -303,11 +331,13 @@ class MainActivity : AppCompatActivity() {
 
         countDown(timeBetweenPhotos)
         showShutterAnimation()
+        if (makeSoundAfterPhoto) {
+            soundPictureTaken.start()
+            }
         cameraController.takePicture(outputOptions, cameraExecutor, object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                 Toast.makeText(this@MainActivity, "Photo saved", Toast.LENGTH_SHORT).show()
             }
-
             override fun onError(exception: ImageCaptureException) {
                 Log.e(TAG, "Photo capture failed: ${exception.message}", exception)
                 return
@@ -335,7 +365,7 @@ class MainActivity : AppCompatActivity() {
         var time = countDownTime
         binding.countDownTimer.text = time.toString()
         binding.countDownTimer.visibility = View.VISIBLE
-        while (time > 0) {
+        while (time >= 0) {
             delay(1000)
             time -= 1
             binding.countDownTimer.text = time.toString()
