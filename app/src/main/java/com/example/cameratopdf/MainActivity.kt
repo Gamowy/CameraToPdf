@@ -1,21 +1,15 @@
 package com.example.cameratopdf
 
-import android.content.pm.PackageManager
-import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import com.example.cameratopdf.databinding.ActivityMainBinding
 import android.Manifest
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.media.MediaPlayer
-import android.provider.MediaStore
+import android.os.Bundle
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
@@ -25,8 +19,10 @@ import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.camera.camera2.interop.ExperimentalCamera2Interop
@@ -38,21 +34,26 @@ import androidx.camera.core.MeteringPointFactory
 import androidx.camera.core.TorchState
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
+import com.example.cameratopdf.databinding.ActivityMainBinding
 import com.example.cameratopdf.ui.settings.camera.CameraSettingsViewModel
 import com.example.cameratopdf.ui.settings.camera.CameraSettingsViewModel.Companion.cameraSettings
 import com.example.cameratopdf.ui.settings.other.OtherSettingsViewModel
 import com.example.cameratopdf.ui.settings.other.OtherSettingsViewModel.Companion.otherSettings
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 import java.text.SimpleDateFormat
 
 class MainActivity : AppCompatActivity() {
@@ -295,6 +296,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private suspend fun startTakingPhotos() {
+        clearCache()
         loadCameraSettings(applicationContext)
         if (makeSoundBeforePhoto) {
             soundBefore.start()
@@ -313,16 +315,10 @@ class MainActivity : AppCompatActivity() {
 
     private suspend fun takePhoto() {
         val name = SimpleDateFormat.getDateTimeInstance().format(System.currentTimeMillis())
-        val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
-            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraToPdf")
+        val tempFile = withContext(Dispatchers.IO) {
+            File.createTempFile(name, ".jpg", cacheDir)
         }
-        val outputOptions = ImageCapture.OutputFileOptions.Builder(
-            contentResolver,
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            contentValues
-        ).build()
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(tempFile).build()
         val cameraExecutor = ContextCompat.getMainExecutor(this@MainActivity)
 
         countDown(timeBetweenPhotos)
@@ -447,6 +443,12 @@ class MainActivity : AppCompatActivity() {
             mutableListOf(
                 Manifest.permission.CAMERA,
             ).toTypedArray()
+    }
+
+    // Clears cache containing photos taken
+    private fun clearCache() {
+        cacheDir.listFiles()?.forEach {
+            it.delete() }
     }
 
     override fun onStop() {
