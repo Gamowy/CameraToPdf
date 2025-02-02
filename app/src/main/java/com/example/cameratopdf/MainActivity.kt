@@ -25,6 +25,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.camera.camera2.interop.ExperimentalCamera2Interop
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.FocusMeteringAction
+import androidx.camera.core.ImageCapture
 import androidx.camera.core.MeteringPointFactory
 import androidx.camera.core.TorchState
 import androidx.camera.view.CameraController
@@ -49,6 +50,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var orientationEventListener: OrientationEventListener
     private var selectedCamera = CameraSelector.DEFAULT_BACK_CAMERA
     private var torchState : Int? = TorchState.OFF
+    private var imageCapture: ImageCapture? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,11 +107,16 @@ class MainActivity : AppCompatActivity() {
 
         // Switch camera
         binding.switchCameraButton.setOnClickListener {
-            selectedCamera = if (selectedCamera == CameraSelector.DEFAULT_FRONT_CAMERA)
-                CameraSelector.DEFAULT_BACK_CAMERA
-            else
-                CameraSelector.DEFAULT_FRONT_CAMERA
-            startCamera(selectedCamera)
+            if (allPermissionsGranted()) {
+                selectedCamera = if (selectedCamera == CameraSelector.DEFAULT_FRONT_CAMERA)
+                    CameraSelector.DEFAULT_BACK_CAMERA
+                else
+                    CameraSelector.DEFAULT_FRONT_CAMERA
+                startCamera(selectedCamera)
+            }
+            else {
+                requestPermissions()
+            }
         }
 
         // Open settings
@@ -129,6 +136,16 @@ class MainActivity : AppCompatActivity() {
                     }
                     .setIcon(R.drawable.ic_info)
                     .show()
+            }
+        }
+
+        // Start taking photos
+        binding.imageCaptureButton.setOnClickListener {
+            if(allPermissionsGranted()) {
+                startTakingPhotos()
+            }
+            else {
+                requestPermissions()
             }
         }
     }
@@ -161,6 +178,9 @@ class MainActivity : AppCompatActivity() {
             else
                 cameraController.enableTorch(false)
         }
+        imageCapture = ImageCapture.Builder()
+            .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+            .build()
 
         // Detect tap to focus and pinch to zoom gestures
         val gestureDetector = GestureDetector(this, GestureListener(cameraController))
@@ -252,6 +272,18 @@ class MainActivity : AppCompatActivity() {
                 cameraController.cameraInfo?.zoomState?.value?.zoomRatio?.times(detector.scaleFactor) ?: 1f
             )
             return true
+        }
+    }
+
+    private fun startTakingPhotos() {
+        // NOTES:
+        // Get capture settings from settings
+        // Start taking photos
+        // Save photos to a temp location
+        // Update ui and play sound as photos are taken
+        // After all photos are taken launch content activity with a fragment to preview the photos
+        imageCapture?.let {
+
         }
     }
 
