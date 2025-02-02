@@ -17,8 +17,8 @@ class CameraSettingsViewModel: ViewModel() {
     private val _photosPerDocument = MutableLiveData(5)
     val photosPerDocument: LiveData<Int> = _photosPerDocument
 
-    private val _timeBetweenPhotos = MutableLiveData(5f)
-    val timeBetweenPhotos: LiveData<Float> = _timeBetweenPhotos
+    private val _timeBetweenPhotos = MutableLiveData(5)
+    val timeBetweenPhotos: LiveData<Int> = _timeBetweenPhotos
 
     private val _makeSoundBeforePhoto = MutableLiveData(true)
     val makeSoundBeforePhoto: LiveData<Boolean> = _makeSoundBeforePhoto
@@ -29,9 +29,6 @@ class CameraSettingsViewModel: ViewModel() {
     private val _makeSoundAfterAllPhotos = MutableLiveData(true)
     val makeSoundAfterAllPhotos: LiveData<Boolean> = _makeSoundAfterAllPhotos
 
-    private val _useAutoFocus = MutableLiveData(true)
-    val useAutoFocus: LiveData<Boolean> = _useAutoFocus
-
     suspend fun setPhotosPerDocument(context: Context, value: Int) {
         _photosPerDocument.value = value
         context.cameraSettings.edit { settings ->
@@ -39,10 +36,10 @@ class CameraSettingsViewModel: ViewModel() {
         }
     }
 
-    suspend fun setTimeBetweenPhotos(context: Context, value: Float) {
+    suspend fun setTimeBetweenPhotos(context: Context, value: Int) {
         _timeBetweenPhotos.value = value
         context.cameraSettings.edit { settings ->
-            settings[TIME_BETWEEN_PHOTOS] = _timeBetweenPhotos.value ?: 5f
+            settings[TIME_BETWEEN_PHOTOS] = _timeBetweenPhotos.value ?: 5
         }
     }
 
@@ -70,7 +67,7 @@ class CameraSettingsViewModel: ViewModel() {
     suspend fun loadSettings(context: Context) {
         val settings = context.cameraSettings.data.first()
         _photosPerDocument.value = settings[PHOTOS_PER_DOCUMENT] ?: 5
-        _timeBetweenPhotos.value = settings[TIME_BETWEEN_PHOTOS] ?: 5f
+        _timeBetweenPhotos.value = settings[TIME_BETWEEN_PHOTOS] ?: 5
         _makeSoundBeforePhoto.value = settings[MAKE_SOUND_BEFORE_PHOTO] ?: true
         _makeSoundAfterPhoto.value = settings[MAKE_SOUND_AFTER_PHOTO] ?: true
         _makeSoundAfterAllPhotos.value = settings[MAKE_SOUND_AFTER_ALL_PHOTOS] ?: true
@@ -79,7 +76,7 @@ class CameraSettingsViewModel: ViewModel() {
     companion object {
         val Context.cameraSettings: DataStore<Preferences> by preferencesDataStore(name = "cameraSettings")
         val PHOTOS_PER_DOCUMENT = intPreferencesKey("photos_per_document")
-        val TIME_BETWEEN_PHOTOS = floatPreferencesKey("time_between_photos")
+        val TIME_BETWEEN_PHOTOS = intPreferencesKey("time_between_photos")
         val MAKE_SOUND_BEFORE_PHOTO = booleanPreferencesKey("make_sound_before_photo")
         val MAKE_SOUND_AFTER_PHOTO = booleanPreferencesKey("make_sound_after_photo")
         val MAKE_SOUND_AFTER_ALL_PHOTOS = booleanPreferencesKey("make_sound_after_all_photos")

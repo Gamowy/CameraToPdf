@@ -30,8 +30,8 @@ class CameraSettingsFragment : Fragment() {
                 binding.photosPerDocumentSlider.value = it.toFloat()
             }
             viewModel.timeBetweenPhotos.value?.let {
-                binding.secondsBetweenPhotosValue.text = it.toInt().toString()
-                binding.timeBetweenPhotosSlider.value = it
+                binding.secondsBetweenPhotosValue.text = it.toString()
+                binding.timeBetweenPhotosSlider.value = it.toFloat()
             }
             viewModel.makeSoundBeforePhoto.value?.let {
                 binding.soundBeforePhotoSwitch.isChecked = it
@@ -58,7 +58,7 @@ class CameraSettingsFragment : Fragment() {
         binding.timeBetweenPhotosSlider.addOnChangeListener {_, value, _ ->
             lifecycleScope.launch {
                 binding.secondsBetweenPhotosValue.text = value.toString()
-                viewModel.setTimeBetweenPhotos(appContext, value)
+                viewModel.setTimeBetweenPhotos(appContext, value.toInt())
             }
         }
         binding.soundBeforePhotoSwitch.setOnCheckedChangeListener { _, isChecked ->
