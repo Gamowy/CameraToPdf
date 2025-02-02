@@ -49,6 +49,7 @@ import com.example.cameratopdf.ui.settings.camera.CameraSettingsViewModel.Compan
 import com.example.cameratopdf.ui.settings.other.OtherSettingsViewModel
 import com.example.cameratopdf.ui.settings.other.OtherSettingsViewModel.Companion.otherSettings
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -66,6 +67,7 @@ class MainActivity : AppCompatActivity() {
     private var selectedCamera = CameraSelector.DEFAULT_BACK_CAMERA
     private var torchState : Int? = TorchState.OFF
 
+    private var photoTakingJob: Job? = null
     private var _isTakingPhoto = MutableLiveData(false)
     private var isTakingPhotos: LiveData<Boolean> = _isTakingPhoto
 
@@ -174,7 +176,7 @@ class MainActivity : AppCompatActivity() {
         // Start taking photos
         binding.imageCaptureButton.setOnClickListener {
             if(allPermissionsGranted()) {
-                lifecycleScope.launch {
+                photoTakingJob = lifecycleScope.launch {
                     startTakingPhotos()
                 }
             }
@@ -293,26 +295,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private suspend fun startTakingPhotos() {
-        _isTakingPhoto.value = true
         loadCameraSettings(applicationContext)
-        updatePicturesTakenInfo(0)
-
         if (makeSoundBeforePhoto) {
             soundBefore.start()
         }
-
-        binding.picturesTakenInfo.visibility = View.VISIBLE
+        beforeStartTakingPhotos()
         for (i in 1..photosPerDocument) {
             takePhoto()
             updatePicturesTakenInfo(i)
         }
-
-        binding.picturesTakenInfo.visibility = View.GONE
         delay(1000)
         if(makeSoundAfterAllPhotos) {
             soundAfter.start()
         }
-        _isTakingPhoto.value = false
+        afterAllPhotosTaken()
     }
 
     private suspend fun takePhoto() {
@@ -353,6 +349,19 @@ class MainActivity : AppCompatActivity() {
         makeSoundBeforePhoto = cameraSettings[CameraSettingsViewModel.MAKE_SOUND_BEFORE_PHOTO] ?: true
         makeSoundAfterPhoto = cameraSettings[CameraSettingsViewModel.MAKE_SOUND_AFTER_PHOTO] ?: true
         makeSoundAfterAllPhotos = cameraSettings[CameraSettingsViewModel.MAKE_SOUND_AFTER_ALL_PHOTOS] ?: true
+    }
+
+    private fun beforeStartTakingPhotos() {
+        _isTakingPhoto.value = true
+        updatePicturesTakenInfo(0)
+        binding.picturesTakenInfo.visibility = View.VISIBLE
+
+    }
+
+    private fun afterAllPhotosTaken() {
+        binding.picturesTakenInfo.visibility = View.GONE
+        binding.countDownTimer.visibility = View.GONE
+        _isTakingPhoto.value = false
     }
 
     private fun updatePicturesTakenInfo(num: Int) {
@@ -438,5 +447,14 @@ class MainActivity : AppCompatActivity() {
             mutableListOf(
                 Manifest.permission.CAMERA,
             ).toTypedArray()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        photoTakingJob?.let {
+            it.cancel()
+            photoTakingJob = null
+            afterAllPhotosTaken()
+        }
     }
 }

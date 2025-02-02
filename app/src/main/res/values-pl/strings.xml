@@ -15,7 +15,7 @@
     <string name="time_between_photos_label">Sekundy pomiędzy zdjęciami:</string>
     <string name="time_between_photos_description">Ustaw czas pomiędzy zdjęciami</string>
     <string name="sounds_label">Dżwięki</string>
-    <string name="sound_before_photo_switch_label">Przed zdjęciem</string>
+    <string name="sound_before_photo_switch_label">Przed zdjęciami</string>
     <string name="sound_after_photo_switch_label">Po zdjęciu</string>
     <string name="sound_after_all_photos_switch_label">Po wszystkich zdjęciach</string>
     <string name="autofocus_label">Autofocus</string>
