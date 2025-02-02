@@ -10,6 +10,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import com.example.cameratopdf.databinding.ActivityContentBinding
+import com.example.cameratopdf.ui.preview.ImagesPreviewFragment
 import com.example.cameratopdf.ui.settings.SettingsFragment
 
 class ContentActivity : AppCompatActivity() {
@@ -31,12 +32,23 @@ class ContentActivity : AppCompatActivity() {
             }
             WindowInsetsCompat.CONSUMED
         }
-
         setSupportActionBar(binding.appbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, SettingsFragment())
-            .commit()
+
+        val extra = intent.getStringExtra("openFragment")
+        extra?.let {
+            val openFragment = when (it) {
+                "settings" -> SettingsFragment()
+                "preview" -> ImagesPreviewFragment()
+                else -> null
+            }
+            if (openFragment != null) {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, openFragment)
+                    .commit()
+                return
+            }
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

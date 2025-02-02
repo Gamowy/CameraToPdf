@@ -156,8 +156,7 @@ class MainActivity : AppCompatActivity() {
 
         // Open settings
         binding.settingsButton.setOnClickListener {
-            val intent = Intent(this, ContentActivity::class.java)
-            startActivity(intent)
+            launchContentActivity("settings")
         }
 
         // Open info
@@ -193,6 +192,13 @@ class MainActivity : AppCompatActivity() {
             binding.settingsButton.isEnabled = !it
             binding.infoButton.isEnabled = !it
         }
+    }
+
+    // Launch content activity
+    private fun launchContentActivity(fragmentToOpen: String) {
+        val intent = Intent(this, ContentActivity::class.java)
+        intent.putExtra("openFragment", fragmentToOpen)
+        startActivity(intent)
     }
 
     // Starts camera preview
@@ -311,6 +317,7 @@ class MainActivity : AppCompatActivity() {
             soundAfter.start()
         }
         afterAllPhotosTaken()
+        launchContentActivity("preview")
     }
 
     private suspend fun takePhoto() {
@@ -328,7 +335,7 @@ class MainActivity : AppCompatActivity() {
             }
         cameraController.takePicture(outputOptions, cameraExecutor, object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                Toast.makeText(this@MainActivity, "Photo saved", Toast.LENGTH_SHORT).show()
+                Log.i(TAG, "Photo capture succeeded: ${tempFile.absolutePath}")
             }
             override fun onError(exception: ImageCaptureException) {
                 Log.e(TAG, "Photo capture failed: ${exception.message}", exception)

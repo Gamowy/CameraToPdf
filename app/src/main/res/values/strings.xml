@@ -37,4 +37,7 @@
         You can adjust number of photos per document and time between photos in settings.
     </string>
     <string name="ok">OK</string>
+    <string name="preview_images">Preview images</string>
+    <string name="image_description">Image</string>
+    <string name='image_label'>Photo %1$d</string>
 </resources>
