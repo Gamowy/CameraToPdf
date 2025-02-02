@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import com.example.cameratopdf.databinding.ActivityMainBinding
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.view.GestureDetector
@@ -19,6 +20,7 @@ import android.view.ViewGroup.MarginLayoutParams
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.camera.camera2.interop.ExperimentalCamera2Interop
 import androidx.camera.core.CameraSelector
@@ -30,6 +32,11 @@ import androidx.camera.view.LifecycleCameraController
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
+import androidx.lifecycle.lifecycleScope
+import com.example.cameratopdf.ui.settings.other.OtherSettingsViewModel
+import com.example.cameratopdf.ui.settings.other.OtherSettingsViewModel.Companion.otherSettings
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -65,6 +72,7 @@ class MainActivity : AppCompatActivity() {
             }
             WindowInsetsCompat.CONSUMED
         }
+        loadTheme(this)
 
         // Device rotation listener
         orientationEventListener = object : OrientationEventListener(this) {
@@ -229,6 +237,25 @@ class MainActivity : AppCompatActivity() {
                 cameraController.cameraInfo?.zoomState?.value?.zoomRatio?.times(detector.scaleFactor) ?: 1f
             )
             return true
+        }
+    }
+
+    private fun loadTheme(context: Context) {
+        lifecycleScope.launch {
+            val settings = context.otherSettings.data.first()
+            val theme =
+                settings[OtherSettingsViewModel.THEME] ?: AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            when (theme) {
+                AppCompatDelegate.MODE_NIGHT_YES -> AppCompatDelegate.setDefaultNightMode(
+                    AppCompatDelegate.MODE_NIGHT_YES
+                )
+
+                AppCompatDelegate.MODE_NIGHT_NO -> AppCompatDelegate.setDefaultNightMode(
+                    AppCompatDelegate.MODE_NIGHT_NO
+                )
+
+                else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            }
         }
     }
 }

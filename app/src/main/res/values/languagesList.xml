@@ -2,6 +2,6 @@
 <resources>
     <string-array name="languagesList">
         <item>English</item>
-        <item>Polish</item>
+        <item>Polski</item>
     </string-array>
 </resources>

@@ -38,6 +38,11 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    android {
+        defaultConfig {
+            resourceConfigurations += "pl"
+        }
+    }
 }
 
 dependencies {
@@ -46,6 +51,7 @@ dependencies {
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.camera.core.v141)
     implementation(libs.material)
+    implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.camera.view)

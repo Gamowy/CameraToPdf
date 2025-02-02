@@ -30,15 +30,24 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
-            <com.google.android.material.slider.Slider
+        <TextView
+            android:id="@+id/photosPerDocumentValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textSize="16sp"
+            tools:text="5" />
+
+
+        <com.google.android.material.slider.Slider
                 android:id="@+id/photosPerDocumentSlider"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/number_of_photos_description"
-                android:valueFrom="0.0"
+                android:valueFrom="1.0"
                 android:valueTo="10.0"
                 android:stepSize="1.0"
-                android:value="5.0"
                 app:thumbHeight="30dp"
                 />
         <TextView
@@ -51,15 +60,23 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
+        <TextView
+            android:id="@+id/secondsBetweenPhotosValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textSize="16sp"
+            tools:text="5" />
+
         <com.google.android.material.slider.Slider
             android:id="@+id/timeBetweenPhotosSlider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:contentDescription="@string/time_between_photos_description"
-            android:valueFrom="0.0"
+            android:valueFrom="0.5"
             android:valueTo="10.0"
-            android:stepSize="1.0"
-            android:value="5.0"
+            android:stepSize="0.5"
             app:thumbHeight="30dp"
             />
         <com.google.android.material.divider.MaterialDivider
@@ -78,16 +95,19 @@
             android:textSize="20sp"
             android:textStyle="bold" />
         <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/soundBeforePhotoSwitch"
             android:layout_width="175dp"
             android:layout_height="match_parent"
             android:checked="true"
             android:text="@string/sound_before_photo_switch_label"/>
         <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/soundAfterPhotoSwitch"
             android:layout_width="175dp"
             android:layout_height="match_parent"
             android:checked="true"
             android:text="@string/sound_after_photo_switch_label"/>
         <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/soundAfterAllPhotosSwitch"
             android:layout_width="175dp"
             android:layout_height="match_parent"
             android:checked="true"

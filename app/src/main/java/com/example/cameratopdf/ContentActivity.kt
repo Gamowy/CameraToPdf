@@ -1,5 +1,7 @@
 package com.example.cameratopdf
 
+import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.ViewGroup.MarginLayoutParams
 import androidx.activity.enableEdgeToEdge
@@ -40,5 +42,11 @@ class ContentActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         onBackPressedDispatcher.onBackPressed()
         return true
+    }
+
+    @SuppressLint("ChromeOsOnConfigurationChanged")
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        finish()
     }
 }

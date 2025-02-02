@@ -2,6 +2,8 @@ package com.example.cameratopdf.ui.settings
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.example.cameratopdf.ui.settings.camera.CameraSettingsFragment
+import com.example.cameratopdf.ui.settings.other.OtherSettingsFragment
 
 class SettingsTabsAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
     override fun getItemCount(): Int = 2

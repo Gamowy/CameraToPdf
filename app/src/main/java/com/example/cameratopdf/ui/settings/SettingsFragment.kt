@@ -21,7 +21,7 @@ class SettingsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSettingsBinding.inflate(inflater, container, false)
-        (activity as AppCompatActivity?)?.supportActionBar?.title = "App settings"
+        (activity as AppCompatActivity?)?.supportActionBar?.title = getString(R.string.app_settings)
         return binding.root
     }
 
