@@ -421,6 +421,7 @@ class MainActivity : AppCompatActivity() {
         binding.pdfsButton.rotation = rotationDegree.toFloat()
         binding.switchCameraButton.rotation = rotationDegree.toFloat()
         binding.infoButton.rotation = rotationDegree.toFloat()
+        binding.flashButton.rotation = rotationDegree.toFloat()
         binding.settingsButton.rotation = rotationDegree.toFloat()
         binding.countDownTimer.rotation = rotationDegree.toFloat()
         binding.picturesTakenInfo.rotation = rotationDegree.toFloat()

@@ -32,7 +32,7 @@
     <string name="info_message">
         Press capture button to begin taking photos.
         After all photos are taken, a preview will be shown.
-        Press the save button to send photos to the server.
+        Press the send button to send photos to the server.
         \n\nThe server will create a PDF from the taken photos.
         You can adjust number of photos per document and time between photos in settings.
     </string>
@@ -40,4 +40,6 @@
     <string name="preview_images">Preview images</string>
     <string name="image_description">Image</string>
     <string name='image_label'>Photo %1$d</string>
+    <string name="send_images">Send</string>
+    <string name="send_images_description">Send images to server</string>
 </resources>
