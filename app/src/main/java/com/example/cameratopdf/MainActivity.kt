@@ -21,11 +21,9 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.camera.camera2.interop.ExperimentalCamera2Interop
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.ImageCapture
@@ -202,8 +200,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Starts camera preview
+
+
     @SuppressLint("ClickableViewAccessibility")
-    @OptIn(ExperimentalCamera2Interop::class)
     private fun startCamera(selector: CameraSelector) {
         cameraController = LifecycleCameraController(this)
         cameraController.bindToLifecycle(this)

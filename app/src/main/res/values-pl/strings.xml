@@ -42,4 +42,8 @@
     <string name='image_label'>Zdjęcie %1$d</string>
     <string name="send_images">Wyślij</string>
     <string name="send_images_description">Wyślij zdjęcia na serwer</string>
+    <string name="error_dialog_title">Niepowodzenie</string>
+    <string name="error_dialog_message">Nie udało się wysłać zdjęć na serwer: %1$s</string>
+    <string name="error_address_not_set">Nie ustawiono adresa serwera</string>
+    <string name="error_no_images">Nie wybrano żadnych zdjęć</string>
 </resources>

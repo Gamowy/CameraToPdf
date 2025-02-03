@@ -42,4 +42,8 @@
     <string name='image_label'>Photo %1$d</string>
     <string name="send_images">Send</string>
     <string name="send_images_description">Send images to server</string>
+    <string name="error_dialog_title">Failed to upload images</string>
+    <string name="error_dialog_message">Failed to upload images to server: %1$s</string>
+    <string name="error_address_not_set">Server address not set</string>
+    <string name="error_no_images">No images selected</string>
 </resources>
