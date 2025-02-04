@@ -47,7 +47,7 @@
     <string name="error_address_not_set">Nie ustawiono adresa serwera</string>
     <string name="error_no_images">Nie wybrano żadnych zdjęć</string>
     <string name="filename_hint">Nazwa pliku</string>
-    <string name="send_dialog_message">Wprwoadź nazwę pliku dla pdf. Jeżeli plik już istnieje to zostanie nadpisany.</string>
+    <string name="send_dialog_message">Wprowadź nazwę pliku pdf. Jeżeli plik już istnieje to zostanie nadpisany.</string>
     <string name="send_dialog_title">Wyślij zdjęcia</string>
     <string name="confirm">Zatwierdź</string>
     <string name="cancel">Anuluj</string>
