@@ -10,8 +10,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.VibrationEffect
 import android.util.Log
 import android.view.GestureDetector
+import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.OrientationEventListener
 import android.view.ScaleGestureDetector
@@ -145,6 +147,7 @@ class MainActivity : AppCompatActivity() {
                     CameraSelector.DEFAULT_BACK_CAMERA
                 else
                     CameraSelector.DEFAULT_FRONT_CAMERA
+                vibrate()
                 startCamera(selectedCamera)
             }
             else {
@@ -174,6 +177,7 @@ class MainActivity : AppCompatActivity() {
         // Start/stop taking photos
         binding.imageCaptureButton.setOnClickListener {
             if (isTakingPhotos.value!!) {
+                vibrate()
                 photoTakingJob?.cancel()
                 photoTakingJob = null
                 afterAllPhotosTaken()
@@ -181,6 +185,7 @@ class MainActivity : AppCompatActivity() {
             else {
                 if (allPermissionsGranted()) {
                     photoTakingJob = lifecycleScope.launch {
+                        vibrate()
                         startTakingPhotos()
                     }
                 } else {
@@ -237,6 +242,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         binding.flashButton.setOnClickListener {
+            vibrate()
             if (torchState == TorchState.OFF)
                 cameraController.enableTorch(true)
             else
@@ -420,6 +426,12 @@ class MainActivity : AppCompatActivity() {
                 })
             }
         })
+    }
+
+    private fun vibrate() {
+        binding.root.performHapticFeedback(
+            HapticFeedbackConstants.LONG_PRESS
+        )
     }
 
     // Rotate view based on device orientation
