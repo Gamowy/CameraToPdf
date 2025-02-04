@@ -10,6 +10,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import com.example.cameratopdf.databinding.ActivityContentBinding
+import com.example.cameratopdf.ui.list.PdfListFragment
 import com.example.cameratopdf.ui.preview.ImagesPreviewFragment
 import com.example.cameratopdf.ui.settings.SettingsFragment
 
@@ -40,6 +41,7 @@ class ContentActivity : AppCompatActivity() {
             val openFragment = when (it) {
                 "settings" -> SettingsFragment()
                 "preview" -> ImagesPreviewFragment()
+                "pdfs" -> PdfListFragment()
                 else -> null
             }
             if (openFragment != null) {

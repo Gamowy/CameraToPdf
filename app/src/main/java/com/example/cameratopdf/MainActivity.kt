@@ -10,7 +10,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.os.VibrationEffect
 import android.util.Log
 import android.view.GestureDetector
 import android.view.HapticFeedbackConstants
@@ -157,11 +156,13 @@ class MainActivity : AppCompatActivity() {
 
         // Open settings
         binding.settingsButton.setOnClickListener {
+            vibrate()
             launchContentActivity("settings")
         }
 
         // Open info
         binding.infoButton.setOnClickListener {
+            vibrate()
             lifecycleScope.launch {
                 MaterialAlertDialogBuilder(this@MainActivity)
                     .setTitle(resources.getString(R.string.info_title))
@@ -172,6 +173,12 @@ class MainActivity : AppCompatActivity() {
                     .setIcon(R.drawable.ic_info)
                     .show()
             }
+        }
+
+        // Open PDFs list
+        binding.pdfsButton.setOnClickListener {
+            vibrate()
+            launchContentActivity("pdfs")
         }
 
         // Start/stop taking photos

@@ -52,4 +52,10 @@
     <string name="filename_hint">Filename</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
+    <string name="refresh_list">Refresh</string>
+    <string name="refresh_list_description">Refresh list of PDFs</string>
+    <string name="pdf_document_placeholder_text">file.pdf</string>
+    <string name="pdf_image_description">PDF</string>
+    <string name="date_placeholder" translatable="false">01.01.2025</string>
+    <string name="pdf_list_title">Pdf files</string>
 </resources>

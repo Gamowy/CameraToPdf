@@ -6,6 +6,7 @@ import android.graphics.Matrix
 import androidx.exifinterface.media.ExifInterface
 import android.util.Base64
 import com.example.cameratopdf.models.CapturedImage
+import com.example.cameratopdf.models.PdfFile
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -28,10 +29,14 @@ import java.io.File
 @Serializable
 data class GeneratePdfResponse(val message: String, val filePath: String)
 
+@Serializable
+data class PdfFile(val fileName: String, val fullPath: String, val createdDate: String)
+
 class PdfApiClient(baseUrl: String) {
-    private val uploadImagesUrl = "$baseUrl/api/android/upload"
+    private val postImagesUrl = "$baseUrl/api/android/upload"
     private val generatePdfUrl = "$baseUrl/api/android/generate"
     private val getPdfUrl = "$baseUrl/api/android/file"
+    private val getPdfsListUrl= "$baseUrl/api/android/files"
     private val clearImagesUrl = "$baseUrl/api/android/clear"
 
     suspend fun uploadImage(image: CapturedImage): Boolean {
@@ -44,7 +49,7 @@ class PdfApiClient(baseUrl: String) {
         val file = image.uri.path?.let { File(it) }
         if (file != null) {
             val base64String = "\"" + convertJpegToBase64(file) + "\""
-            val response = (client.post(uploadImagesUrl) {
+            val response = (client.post(postImagesUrl) {
                 contentType(ContentType.Application.Json)
                 setBody(base64String)
             })
@@ -100,6 +105,27 @@ class PdfApiClient(baseUrl: String) {
             return response.readRawBytes()
         }
         return null
+    }
+
+    suspend fun getAllFilesList() : List<PdfFile> {
+        val client = HttpClient(CIO) {
+            install(ContentNegotiation) {
+                json()
+            }
+            install(HttpTimeout) {
+                requestTimeoutMillis = 30000
+                connectTimeoutMillis = 10000
+            }
+        }
+        val response = client.get(getPdfsListUrl) {
+            contentType(ContentType.Application.Json)
+        }
+        client.close()
+        if (response.status.value != 200) {
+            val responseBody : List<PdfFile> = response.body<List<PdfFile>>()
+            return responseBody
+        }
+        return emptyList()
     }
 
     suspend fun clearImages() : Boolean {

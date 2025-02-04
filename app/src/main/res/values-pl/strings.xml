@@ -52,4 +52,9 @@
     <string name="confirm">Zatwierdź</string>
     <string name="cancel">Anuluj</string>
     <string name="error_filename_empty">Nazwa pliku nie może być pusta</string>
+    <string name="refresh_list">Odśwież</string>
+    <string name="refresh_list_description">Odśwież listę pdf</string>
+    <string name="pdf_document_placeholder_text">plik.pdf</string>
+    <string name="pdf_image_description">PDF</string>
+    <string name="pdf_list_title">Pliki pdf</string>
 </resources>
