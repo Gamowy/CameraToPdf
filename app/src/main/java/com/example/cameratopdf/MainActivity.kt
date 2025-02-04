@@ -171,24 +171,37 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Start taking photos
+        // Start/stop taking photos
         binding.imageCaptureButton.setOnClickListener {
-            if(allPermissionsGranted()) {
-                photoTakingJob = lifecycleScope.launch {
-                    startTakingPhotos()
-                }
+            if (isTakingPhotos.value!!) {
+                photoTakingJob?.cancel()
+                photoTakingJob = null
+                afterAllPhotosTaken()
             }
             else {
-                requestPermissions()
+                if (allPermissionsGranted()) {
+                    photoTakingJob = lifecycleScope.launch {
+                        startTakingPhotos()
+                    }
+                } else {
+                    requestPermissions()
+                }
             }
         }
 
-        // Disable buttons while taking photos in progress
+
         isTakingPhotos.observe(this) {
-            binding.imageCaptureButton.isEnabled = !it
+            // Disable buttons while taking photos in progress
             binding.switchCameraButton.isEnabled = !it
             binding.settingsButton.isEnabled = !it
             binding.infoButton.isEnabled = !it
+
+            // Switch capture button to stop button
+            if (it) {
+                binding.imageCaptureButton.foreground = AppCompatResources.getDrawable(this, R.drawable.stop_capture_button)
+            } else {
+                binding.imageCaptureButton.foreground = AppCompatResources.getDrawable(this, R.drawable.capture_button)
+            }
         }
     }
 
