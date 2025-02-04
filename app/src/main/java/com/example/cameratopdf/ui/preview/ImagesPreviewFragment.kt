@@ -148,9 +148,7 @@ class ImagesPreviewFragment : Fragment(), ImagePreviewSelectedListener {
     }
 
     private fun saveAndOpenPdf(uri: Uri) {
-        appContext.contentResolver.openOutputStream(uri)?.use { outputStream ->
-            outputStream.write(pdfBytes)
-        }
+        appContext.contentResolver.openOutputStream(uri)?.use { it.write(pdfBytes) }
         val openPdfIntent = Intent(Intent.ACTION_VIEW).apply {
             setDataAndType(uri, "application/pdf")
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

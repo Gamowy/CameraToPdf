@@ -6,11 +6,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/photoCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         app:cardCornerRadius="15dp"
         app:cardElevation="7dp"
+        android:foreground="?attr/selectableItemBackground"
+        android:background="@drawable/image_preview_ripple_effect"
         >
         
         <LinearLayout

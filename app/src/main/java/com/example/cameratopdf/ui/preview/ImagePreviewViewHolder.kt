@@ -10,8 +10,9 @@ class ImagePreviewViewHolder(private val imagePreviewBinding: ImagePreviewBindin
         imagePreviewBinding.photoLabel.text = capturedImage.label
         imagePreviewBinding.photoPreview.setImageURI(capturedImage.uri)
         imagePreviewBinding.photoCheckBox.isChecked = capturedImage.isSelected
-        imagePreviewBinding.photoCheckBox.setOnCheckedChangeListener { _, _ ->
+        imagePreviewBinding.photoCard.setOnClickListener {
             imagePreviewSelectedListener.onImageSelected(capturedImage)
+            imagePreviewBinding.photoCheckBox.isChecked = !imagePreviewBinding.photoCheckBox.isChecked
         }
     }
 }
