@@ -103,6 +103,7 @@ class ImagesPreviewFragment : Fragment(), ImagePreviewSelectedListener {
             }
             if (serverUrl != null && serverUrl != "") {
                 binding.progressIndicator.visibility = View.VISIBLE
+                binding.sendButton.visibility = View.GONE
                 val client = PdfApiClient(serverUrl)
                 if (client.clearImages()) {
                     val uploadList = mutableListOf<Deferred<Boolean>>()
@@ -123,6 +124,7 @@ class ImagesPreviewFragment : Fragment(), ImagePreviewSelectedListener {
             showErrorDialog(e.message.toString())
         } finally {
             binding.progressIndicator.visibility = View.GONE
+            binding.sendButton.visibility = View.VISIBLE
         }
     }
 
