@@ -75,7 +75,7 @@ class ImagesPreviewFragment : Fragment(), ImagePreviewSelectedListener {
         createPdfLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == AppCompatActivity.RESULT_OK) {
                 result.data?.data?.also { uri ->
-                    savePdfToUri(uri)
+                    saveAndOpenPdf(uri)
                 }
             }
         }
@@ -147,10 +147,15 @@ class ImagesPreviewFragment : Fragment(), ImagePreviewSelectedListener {
         createPdfLauncher.launch(intent)
     }
 
-    private fun savePdfToUri(uri: Uri) {
+    private fun saveAndOpenPdf(uri: Uri) {
         appContext.contentResolver.openOutputStream(uri)?.use { outputStream ->
             outputStream.write(pdfBytes)
         }
+        val openPdfIntent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, "application/pdf")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        startActivity(Intent.createChooser(openPdfIntent, "Open PDF with"))
     }
 
     private fun showErrorDialog(message: String) {
