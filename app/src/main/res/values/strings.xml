@@ -46,4 +46,10 @@
     <string name="error_dialog_message">Failed to upload images to server: %1$s</string>
     <string name="error_address_not_set">Server address not set</string>
     <string name="error_no_images">No images selected</string>
+    <string name="error_filename_empty">Filename cannot be empty</string>
+    <string name="send_dialog_title">Send images</string>
+    <string name="send_dialog_message">Enter filename for pdf. If file already exists it will be overwritten.</string>
+    <string name="filename_hint">Filename</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
 </resources>

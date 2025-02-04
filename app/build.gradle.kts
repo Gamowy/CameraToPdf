@@ -63,8 +63,8 @@ dependencies {
     implementation(libs.ktor.client.core.jvm)
     implementation(libs.ktor.client.cio.jvm)
     implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json.jvm)
     implementation(libs.kotlinx.serialization.json)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    implementation(libs.androidx.exifinterface)
 }

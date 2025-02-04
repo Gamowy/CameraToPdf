@@ -2,6 +2,8 @@ package com.example.cameratopdf.network
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import androidx.exifinterface.media.ExifInterface
 import android.util.Base64
 import com.example.cameratopdf.models.CapturedImage
 import io.ktor.client.HttpClient
@@ -14,8 +16,10 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readRawBytes
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.Serializable
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -24,7 +28,7 @@ import java.io.File
 @Serializable
 data class GeneratePdfResponse(val message: String, val filePath: String)
 
-class PdfApiClient(private val baseUrl: String) {
+class PdfApiClient(baseUrl: String) {
     private val uploadImagesUrl = "$baseUrl/api/android/upload"
     private val generatePdfUrl = "$baseUrl/api/android/generate"
     private val getPdfUrl = "$baseUrl/api/android/file"
@@ -54,10 +58,14 @@ class PdfApiClient(private val baseUrl: String) {
 
     suspend fun generatePdf(fileName: String, language: String) : String? {
         val client = HttpClient(CIO) {
+            install(ContentNegotiation) {
+                json()
+            }
             install(HttpTimeout) {
                 requestTimeoutMillis = 30000
                 connectTimeoutMillis = 10000
             }
+
         }
         val response : HttpResponse = client.post(generatePdfUrl) {
             url {
@@ -68,7 +76,7 @@ class PdfApiClient(private val baseUrl: String) {
         }
         client.close()
         if (response.status.value == 200) {
-            val responseBody = response.body<GeneratePdfResponse>()
+            val responseBody: GeneratePdfResponse = response.body()
             return responseBody.filePath
         }
         return null
@@ -108,9 +116,30 @@ class PdfApiClient(private val baseUrl: String) {
 
     private fun convertJpegToBase64(imageFile: File) : String {
         val bitmap = BitmapFactory.decodeFile(imageFile.absolutePath)
+        val rotatedBitmap = checkImageRotation(bitmap, imageFile)
         val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+        rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
         val bytes = byteArrayOutputStream.toByteArray()
         return Base64.encodeToString(bytes, Base64.NO_WRAP)
+    }
+
+    private fun checkImageRotation(img: Bitmap, selectedImage: File): Bitmap {
+        val ei = ExifInterface(selectedImage.absolutePath)
+        val orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+
+        return when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> rotateImage(img, 90)
+            ExifInterface.ORIENTATION_ROTATE_180 -> rotateImage(img, 180)
+            ExifInterface.ORIENTATION_ROTATE_270 -> rotateImage(img, 270)
+            else -> img
+        }
+    }
+
+    private fun rotateImage(img: Bitmap, degree: Int): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(degree.toFloat())
+        val rotatedImg = Bitmap.createBitmap(img, 0, 0, img.width, img.height, matrix, true)
+        img.recycle()
+        return rotatedImg
     }
 }
